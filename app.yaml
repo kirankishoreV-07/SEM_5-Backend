@@ -1,0 +1,47 @@
+runtime: nodejs18
+
+# This tells Google Cloud that this is the backend service
+service: default
+
+# Environment variables for Google Cloud deployment
+# These will be provided by GitHub Actions secrets during deployment
+env_variables:
+  NODE_ENV: production
+  # SUPABASE_URL: Will be set by GitHub Actions from secrets
+  # SUPABASE_KEY: Will be set by GitHub Actions from secrets  
+  # JWT_SECRET: Will be set by GitHub Actions from secrets
+  # GOOGLE_PLACES_API_KEY: Will be set by GitHub Actions from secrets
+  # GOOGLE_GEOCODING_API_KEY: Will be set by GitHub Actions from secrets
+  # GOOGLE_DISTANCE_MATRIX_API_KEY: Will be set by GitHub Actions from secrets
+  # GOOGLE_MAPS_API_KEY: Will be set by GitHub Actions from secrets
+
+# Automatic scaling configuration
+automatic_scaling:
+  min_instances: 1
+  max_instances: 10
+  target_cpu_utilization: 0.6
+
+# Resource allocation
+resources:
+  cpu: 1
+  memory_gb: 0.5
+  disk_size_gb: 10
+
+# Handlers for static files and main app
+handlers:
+  # Handle all requests with the main application
+  - url: /.*
+    script: auto
+    secure: always
+
+# Skip files during deployment
+skip_files:
+  - ^(.*/)?#.*#$
+  - ^(.*/)?.*~$
+  - ^(.*/)?.*\.py[co]$
+  - ^(.*/)?.*/RCS/.*$
+  - ^(.*/)?\..*$
+  - ^(.*/)?node_modules$
+  - ^(.*/)?test.*$
+  - ^(.*/)?.*\.test\.js$
+  - ^(.*/)?.*\.spec\.js$

@@ -1,0 +1,77 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Logs
+*.log
+logs/
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# Temporary folders
+tmp/
+temp/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Google Cloud
+.gcloud/
+
+# Uploads and temporary files
+uploads/
+temp/
+server.log
+
+# Test files
+test_*.js
+*test*.js
+*.sql
+demo_*.js
+inspect_*.js
+fix_*.js
+apply_*.js
+check_*.js
+complete_*.js
+comprehensive_*.js
+CORRECTED_*.sql
+create_*.js
+database_*.sql
+DEPLOY_*.sql
+deploy_*.js
+ENHANCED_*.sql
+FINAL_*.sql
+final_*.sql
+generate_*.js
+initialize_*.js
+migrate_*.js
+quick_*.js
+setup_*.js
+simple_*.js
+supabase_*.sql
+SUPABASE_*.sql
+table_*.sql
+update_*.js

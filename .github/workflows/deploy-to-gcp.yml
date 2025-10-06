@@ -1,0 +1,82 @@
+name: Deploy to Google Cloud App Engine
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  deploy:
+    name: Deploy Backend to Google Cloud
+    runs-on: ubuntu-latest
+    
+    # Only deploy on push to main/master, not on PRs
+    if: github.event_name == 'push'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+
+    - name: Create app.yaml with environment variables
+      run: |
+        cat > app.yaml << EOF
+        runtime: nodejs18
+        service: default
+        
+        env_variables:
+          NODE_ENV: production
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
+          GOOGLE_GEOCODING_API_KEY: ${{ secrets.GOOGLE_GEOCODING_API_KEY }}
+          GOOGLE_DISTANCE_MATRIX_API_KEY: ${{ secrets.GOOGLE_DISTANCE_MATRIX_API_KEY }}
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+        
+        automatic_scaling:
+          min_instances: 1
+          max_instances: 10
+          target_cpu_utilization: 0.6
+        
+        resources:
+          cpu: 1
+          memory_gb: 0.5
+          disk_size_gb: 10
+        
+        handlers:
+          - url: /.*
+            script: auto
+            secure: always
+        
+        skip_files:
+          - ^(.*/)?#.*#$
+          - ^(.*/)?.*~$
+          - ^(.*/)?.*\.py[co]$
+          - ^(.*/)?.*/RCS/.*$
+          - ^(.*/)?\..*$
+          - ^(.*/)?node_modules$
+          - ^(.*/)?test.*$
+          - ^(.*/)?.*\.test\.js$
+          - ^(.*/)?.*\.spec\.js$
+        EOF
+
+    - name: Deploy to App Engine
+      run: gcloud app deploy --quiet
